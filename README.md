@@ -1,4 +1,6 @@
-## Welcome to GitHub Pages
+## Welcome to EPCtagCoder
+
+Java implementation of [EPC Tag Data Standard 1.9] http://www.gs1.org/epc/tag-data-standard
 
 You can use the [editor on GitHub](https://github.com/jlcout/epctagcoder/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
 
