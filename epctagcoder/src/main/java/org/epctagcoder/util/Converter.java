@@ -1,5 +1,3 @@
-//http://www.exploringbinary.com/decimal-binary-conversion-using-deci-binary/
-
 package org.epctagcoder.util;
 
 import java.math.BigDecimal;
@@ -106,7 +104,7 @@ public class Converter {
 	}
 	
 	
-	// montei esse, dá dó descartar
+	// montei esse, dï¿½ dï¿½ descartar
 	public static String binToDec2(String bin) {
 		int len = bin.length();
 		int rev = len - 1;
