@@ -3,15 +3,10 @@
 Java implementation of [EPC Tag Data Standard 1.9](http://www.gs1.org/epc/tag-data-standard)
 
 
-
-
-
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+### Syntax
 
 ```markdown
-Syntax
+
 
     ParseGDTI parseGDTI96 = ParseGDTI.Builder()
 			   .withCompanyPrefix("0614141")
