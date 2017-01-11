@@ -6,7 +6,7 @@ Java implementation of [EPC Tag Data Standard 1.9](http://www.gs1.org/epc/tag-da
 An extremely intuitive, small, and ultra fast EPC encode and decode
 
 
-### Syntax
+### Example
 
 ```markdown
 
