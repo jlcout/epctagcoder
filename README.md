@@ -1,9 +1,9 @@
-## Welcome to EPCtagCoder
+## EPCtagCoder
 
 
 Java implementation of [EPC Tag Data Standard 1.9](http://www.gs1.org/epc/tag-data-standard)
 
-An extremely intuitive, small, and ultra fast EPC encode and decode
+An extremely intuitive, small and ultra fast EPC encoding and decoding library for java. 
 
 
 ### Example
