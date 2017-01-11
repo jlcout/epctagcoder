@@ -1,9 +1,18 @@
-## EPCtagCoder
 
+```markdown
+  _____ ____   ____ _               ____          _           
+ | ____|  _ \ / ___| |_ __ _  __ _ / ___|___   __| | ___ _ __ 
+ |  _| | |_) | |   | __/ _` |/ _` | |   / _ \ / _` |/ _ \ '__|
+ | |___|  __/| |___| || (_| | (_| | |__| (_) | (_| |  __/ |   
+ |_____|_|    \____|\__\__,_|\__, |\____\___/ \__,_|\___|_|   
+                             |___/                            
+
+```
+An extremely intuitive, small and ultra fast EPC encoding and decoding library for java. 
 
 Java implementation of [EPC Tag Data Standard 1.9](http://www.gs1.org/epc/tag-data-standard)
 
-An extremely intuitive, small and ultra fast EPC encoding and decoding library for java. 
+
 
 
 ### Example
