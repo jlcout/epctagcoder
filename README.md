@@ -1,13 +1,5 @@
-
-```markdown
- ___ ___  ___ _              ___         _         
-| __| _ \/ __| |_ __ _ __ _ / __|___  __| |___ _ _ 
-| _||  _/ (__|  _/ _` / _` | (__/ _ \/ _` / -_) '_|
-|___|_|  \___|\__\__,_\__, |\___\___/\__,_\___|_|  
-                      |___/                          
+### ***EPCtagCoder***
 An extremely intuitive, small and ultra fast EPC encoding and decoding library for java. 
-```
-
 
 
 ### Features
