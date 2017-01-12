@@ -1,6 +1,6 @@
 
 
-### EPCtagCoder
+### ***EPCtagCoder***
 
 An extremely intuitive, small and ultra fast EPC encoding and decoding library for java. 
 
@@ -38,13 +38,9 @@ ParseSSCC parseSSCC96 = ParseSSCC.Builder()
 	.withTagSize( SSCCTagSize.BITS_96 )
 	.withFilterValue( SSCCFilterValue.RESERVED_5 )
 	.build();
-		
-System.out.println("parseSSCC.getRfidTag() "+ parseSSCC96.getRfidTag() );
-		
+
 SSCC sscc = parseSSCC96.getSSCC();
-		
 System.out.println("parseSSCC              "+ sscc.toString() );   
-     
 
 ```
 
