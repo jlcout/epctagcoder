@@ -33,16 +33,16 @@ An extremely intuitive, small and ultra fast EPC encoding and decoding library f
 
 ```markdown
 
-ParseSSCC parseSSCC96 = ParseSSCC.Builder()
+ParseSSCC parseSSCC = ParseSSCC.Builder()
 	.withCompanyPrefix("023356789")
-	.withExtensionDigit( SSCCExtensionDigit.EXTENSION_3 )
+	.withExtensionDigit(SSCCExtensionDigit.EXTENSION_3)
 	.withSerial("0200002")
-	.withTagSize( SSCCTagSize.BITS_96 )
-	.withFilterValue( SSCCFilterValue.RESERVED_5 )
+	.withTagSize(SSCCTagSize.BITS_96)
+	.withFilterValue(SSCCFilterValue.RESERVED_5)
 	.build();
 
-SSCC sscc = parseSSCC96.getSSCC();
-System.out.println("parseSSCC              "+ sscc.toString() );   
+SSCC sscc = parseSSCC.getSSCC();
+System.out.println("parseSSCC "+ sscc.toString() );   
 
 ```
 
