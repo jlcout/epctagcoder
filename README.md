@@ -1,36 +1,54 @@
 
 ```markdown
-  _____ ____   ____ _               ____          _           
- | ____|  _ \ / ___| |_ __ _  __ _ / ___|___   __| | ___ _ __ 
- |  _| | |_) | |   | __/ _` |/ _` | |   / _ \ / _` |/ _ \ '__|
- | |___|  __/| |___| || (_| | (_| | |__| (_) | (_| |  __/ |   
- |_____|_|    \____|\__\__,_|\__, |\____\___/ \__,_|\___|_|   
-                             |___/                            
-
-```
+ ___ ___  ___ _              ___         _         
+| __| _ \/ __| |_ __ _ __ _ / __|___  __| |___ _ _ 
+| _||  _/ (__|  _/ _` / _` | (__/ _ \/ _` / -_) '_|
+|___|_|  \___|\__\__,_\__, |\___\___/\__,_\___|_|  
+                      |___/                          
 An extremely intuitive, small and ultra fast EPC encoding and decoding library for java. 
+```
 
-Java implementation of [EPC Tag Data Standard 1.9](http://www.gs1.org/epc/tag-data-standard)
 
 
+### Features
+
+- Implemented in accordance with [EPC Tag Data Standard 1.9](http://www.gs1.org/epc/tag-data-standard)
+- Easy to understand, developed with step builder pattern
+- Small library, only 50kb
+- Ultra fast, encode / decode 10.000 EPC on 200 milliseconds
+
+
+### Epc implementations:
+
+- SGTIN - _Serialized Global Trade Item Number_
+- SSCC  - _Serial Shipping Container Code_
+- SGLN  - _Global Location Number With or Without Extension_
+- GRAI  - _Global Returnable Asset Identifier_
+- GIAI  - _Global Individual Asset Identifier_
+- GSRN  - _Global Service Relation Number – Recipient_
+- GSRNP - _Global Service Relation Number – Provider_
+- GDTI  - _Global Document Type Identifier_
+- CPI   - _Component / Part Identifier_
+- SGCN  - _Serialized Global Coupon Number_
 
 
 ### Example
 
 ```markdown
 
-
-	ParseGDTI parseGDTI96 = ParseGDTI.Builder()
-			   .withCompanyPrefix("0614141")
-			   .withDocType("02346")
-			   .withserial("274877906943") 
-			   .withTagSize( GDTITagSize.BITS_96 )
-			   .withFilterValue( GDTIFilterValue.ALL_OTHERS_0 )
-			   .build();
-
-	GDTI gdti96 = parseGDTI96.getGDTI();
-	System.out.println("parseGDTI.getRfidTag()        "+ parseGDTI96.getRfidTag() );
-	System.out.println("parseGDTI                     "+ gdti96.toString() );     
+ParseSSCC parseSSCC96 = ParseSSCC.Builder()
+	.withCompanyPrefix("023356789")
+	.withExtensionDigit( SSCCExtensionDigit.EXTENSION_3 )
+	.withSerial("0200002")
+	.withTagSize( SSCCTagSize.BITS_96 )
+	.withFilterValue( SSCCFilterValue.RESERVED_5 )
+	.build();
+		
+System.out.println("parseSSCC.getRfidTag() "+ parseSSCC96.getRfidTag() );
+		
+SSCC sscc = parseSSCC96.getSSCC();
+		
+System.out.println("parseSSCC              "+ sscc.toString() );   
      
 
 ```
