@@ -1,10 +1,11 @@
 
 
 ### EPCtagCoder
+
 An extremely intuitive, small and ultra fast EPC encoding and decoding library for java. 
 
 
-### Featuresz
+### Features
 
 - Implemented in accordance with [EPC Tag Data Standard 1.9](http://www.gs1.org/epc/tag-data-standard)
 - Easy to understand, developed with step builder pattern
