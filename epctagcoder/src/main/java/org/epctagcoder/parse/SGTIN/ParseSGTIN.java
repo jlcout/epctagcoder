@@ -30,9 +30,9 @@ public class ParseSGTIN {
 	private TableItem tableItem;
 	private int remainder;
 	
-    public static ChoiceStep Builder() {
-        return new Steps();
-    }
+	public static ChoiceStep Builder() {
+		return new Steps();
+	}
 
 	private ParseSGTIN(Steps steps) {
 		this.extensionDigit = steps.extensionDigit;
@@ -44,7 +44,7 @@ public class ParseSGTIN {
 		this.rfidTag = steps.rfidTag;
 		this.epcTagURI = steps.epcTagURI;
 		this.epcPureIdentityURI = steps.epcPureIdentityURI;
-    	parse();
+		parse();
 	}
 	
 	
@@ -58,19 +58,20 @@ public class ParseSGTIN {
 		if ( optionalRfidTag.isPresent() ) {
 			String inputBin = Converter.hexToBin(rfidTag);
 			String headerBin = inputBin.substring(0, 8);
-			String filterBin = inputBin.substring(8,11);
-			String partitionBin = inputBin.substring(11,14);
+			String filterBin = inputBin.substring(8, 11);
+			String partitionBin = inputBin.substring(11, 14);
 			SGTINPartitionTableList sgtinPartitionTableList = new SGTINPartitionTableList();			
 
 			tagSize = SGTINTagSize.forCode(SGTINHeader.forCode(headerBin).getTagSize());
 			tableItem = sgtinPartitionTableList.getPartitionByValue( Integer.parseInt(partitionBin, 2) );
 			
 			String filterDec = Long.toString( Long.parseLong(filterBin, 2) );
-			String companyPrefixBin = inputBin.substring(14,14+tableItem.getM());
-			String itemReferenceWithExtensionBin = inputBin.substring(14+tableItem.getM(),14+tableItem.getM()+tableItem.getN());
+			String companyPrefixBin = inputBin.substring(14, 14+tableItem.getM());
+			String itemReferenceWithExtensionBin = inputBin.substring(14+tableItem.getM(), 14+tableItem.getM()+tableItem.getN());
 			String serialBin = inputBin.substring(14+tableItem.getM()+tableItem.getN()  );
 			String companyPrefixDec = Converter.binToDec(companyPrefixBin);
-			String itemReferenceWithExtensionDec = Converter.binToDec(itemReferenceWithExtensionBin);
+			String itemReferenceWithExtensionDec = Converter.strZero(Converter.binToDec(itemReferenceWithExtensionBin), tableItem.getDigits());
+			
 			String extensionDec = itemReferenceWithExtensionDec.substring(0,1);
 			
 			itemReference = itemReferenceWithExtensionDec.substring(1); 

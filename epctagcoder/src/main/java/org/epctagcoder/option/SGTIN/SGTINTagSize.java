@@ -55,7 +55,13 @@ public enum SGTINTagSize {
     }
     
     public static SGTINTagSize forCode(int code) {
-        return BY_CODE_MAP.get(code);
+    	SGTINTagSize bits = BY_CODE_MAP.get(code);
+    	
+    	if (bits==null) {
+    		throw new IllegalArgumentException(String.format("SGTIN tag size %d is invalid. Only 96 bits or 128 bits supported.", code));
+    	}
+    	
+        return bits;
     } 	
 	
 	
