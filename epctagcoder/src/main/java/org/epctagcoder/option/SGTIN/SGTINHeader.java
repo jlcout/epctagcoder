@@ -35,7 +35,13 @@ public enum SGTINHeader {
     }
     
     public static SGTINHeader forCode(String code) {
-        return BY_CODE_MAP.get(code);
+    	SGTINHeader header = BY_CODE_MAP.get(code);
+    	
+    	if (header==null) {
+    		throw new IllegalArgumentException(String.format("SGTIN header %s is invalid. Allowed only 00110000 and 00110110", code));
+    	}
+
+    	return header;
     } 	
 	
 	
