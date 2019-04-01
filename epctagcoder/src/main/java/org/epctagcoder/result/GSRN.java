@@ -45,6 +45,25 @@ public class GSRN extends Base {
 				.append(String.format(", \"binary\": \"%s\"", getBinary()))
 				.append(String.format(", \"rfidTag\": \"%s\"", getRfidTag())).append(" }");
 		
+	
+/*		
+		json.append("{ \"epcScheme\": \"").append(getEpcScheme()).append("\"") 
+				.append(", \"applicationIdentifier\": \"").append(getApplicationIdentifier()).append("\"")
+				.append(", \"tagSize\": \"").append(getTagSize()).append("\"")
+				.append(", \"filterValue\": \"").append(getFilterValue()).append("\"")
+				.append(", \"partitionValue\": \"").append(getPartitionValue()).append("\"")
+				.append(", \"prefixLength\": \"").append(getPrefixLength()).append("\"")
+				.append(", \"companyPrefix\": \"").append(getCompanyPrefix()).append("\"")
+				.append(", \"serviceReference\": \"").append(getServiceReference()).append("\"")
+				.append(", \"checkDigit\": \"").append(getCheckDigit()).append("\"")
+				.append(", \"epcPureIdentityURI\": \"").append(getEpcPureIdentityURI()).append("\"")
+				.append(", \"epcTagURI\": \"").append(getEpcTagURI()).append("\"")
+				.append(", \"epcRawURI\": \"").append(getEpcRawURI()).append("\"")
+				.append(", \"binary\": \"").append(getBinary()).append("\"")
+				.append(", \"rfidTag\": \"").append(getRfidTag()).append("\" }");
+		*/
+		
+		
 		return json.toString();
 	}
 

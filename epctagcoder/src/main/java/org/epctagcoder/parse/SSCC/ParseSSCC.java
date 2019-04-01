@@ -1,3 +1,5 @@
+
+
 package org.epctagcoder.parse.SSCC;
 
 import java.util.Optional;
@@ -13,7 +15,6 @@ import org.epctagcoder.option.SSCC.SSCCHeader;
 import org.epctagcoder.option.SSCC.SSCCTagSize;
 import org.epctagcoder.option.SSCC.partitionTable.SSCCPartitionTableList;
 import org.epctagcoder.result.SSCC;
-//import org.epctagcoder.util.BigDec2Bin;
 import org.epctagcoder.util.Converter;
 
 public class ParseSSCC {
@@ -30,7 +31,7 @@ public class ParseSSCC {
 	private String epcPureIdentityURI;
 	private TableItem tableItem;
 	
-    public static ChoiceStep Builder() {
+    public static ChoiceStep Builder() throws Exception {
         return new Steps();
     }
 
@@ -65,7 +66,7 @@ public class ParseSSCC {
 			String companyPrefixBin = inputBin.substring(14,14+tableItem.getM());
 			String serialWithExtensionBin = inputBin.substring(14+tableItem.getM(),14+tableItem.getM()+tableItem.getN());
 			String filterDec = Long.toString( Long.parseLong(filterBin, 2) );
-			String companyPrefixDec = Converter.binToDec(companyPrefixBin); //Long.toString( Long.parseLong(companyPrefixBin, 2) );
+			String companyPrefixDec = Converter.binToDec(companyPrefixBin); 
 			String serialWithExtension = Converter.strZero(Converter.binToDec(serialWithExtensionBin), tableItem.getDigits() ); 
 			String extensionDec = serialWithExtension.substring(0,1);		
 
@@ -75,7 +76,7 @@ public class ParseSSCC {
 			filterValue = SSCCFilterValue.forCode( Integer.parseInt(filterDec) );
 			tagSize = SSCCTagSize.forCode( SSCCHeader.forCode(headerBin).getTagSize() );
 			prefixLength = PrefixLength.forCode(tableItem.getL());
-			
+			System.out.println("***********************");
 		} else {
 			
 			if ( optionalCompanyPrefix.isPresent() ) {
@@ -181,12 +182,7 @@ public class ParseSSCC {
 		bin.append( Converter.decToBin(filterValue.getValue(), 3) );
 		bin.append( Converter.decToBin(tableItem.getPartitionValue(), 3) );
 		bin.append( Converter.decToBin(Integer.parseInt(companyPrefix), tableItem.getM()) );
-
-//		jlc
-//		bin.append( Converter.strZero(BigDec2Bin.dec2bin(extensionDigit.getValue()+serial), tableItem.getN()) );
-		
 		bin.append( Converter.decToBin(extensionDigit.getValue()+serial, tableItem.getN()) );
-		
 		bin.append( Converter.decToBin(RESERVED, 24) );		
 
 		return bin.toString();

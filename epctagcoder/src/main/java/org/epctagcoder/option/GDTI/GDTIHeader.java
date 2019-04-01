@@ -3,6 +3,7 @@ package org.epctagcoder.option.GDTI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+
 public enum GDTIHeader {
 	HEADER_00101100("00101100") {
 		public Integer getTagSize() {
@@ -35,7 +36,13 @@ public enum GDTIHeader {
     }
     
     public static GDTIHeader forCode(String code) {
-        return BY_CODE_MAP.get(code);
+    	GDTIHeader header = BY_CODE_MAP.get(code);
+    	
+    	if (header==null) {
+    		throw new IllegalArgumentException(String.format("GDTI header [%s] is invalid. Allowed only 00101100 or 00111110", code));
+    	}
+    	
+        return header;    	    	
     } 	
 	
 	

@@ -3,6 +3,8 @@ package org.epctagcoder.option.CPI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+
+
 public enum CPIHeader {
 	HEADER_00111100("00111100") {
 		public Integer getTagSize() {
@@ -35,7 +37,13 @@ public enum CPIHeader {
     }
     
     public static CPIHeader forCode(String code) {
-        return BY_CODE_MAP.get(code);
+    	CPIHeader header = BY_CODE_MAP.get(code);
+    	
+    	if (header==null) {
+    		throw new IllegalArgumentException(String.format("CPI header [%s] is invalid. Allowed only 00111100 or 00111101", code));
+    	}
+    	
+        return header;    	
     } 	
 	
 	

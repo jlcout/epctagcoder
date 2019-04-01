@@ -30,7 +30,13 @@ public enum SSCCHeader {
     }
     
     public static SSCCHeader forCode(String code) {
-        return BY_CODE_MAP.get(code);
+    	SSCCHeader header = BY_CODE_MAP.get(code);
+    	
+    	if (header==null) {
+    		throw new IllegalArgumentException(String.format("SSCC header [%s] is invalid. Allowed only 00110001", code));
+    	}
+    	
+        return header;
     } 	
 	
 	

@@ -25,7 +25,7 @@ public class ParseGSRN {
 	private String epcPureIdentityURI;
 	private TableItem tableItem;
 	
-    public static ChoiceStep Builder() {
+    public static ChoiceStep Builder() throws Exception {
         return new Steps();
     }
 
@@ -59,7 +59,7 @@ public class ParseGSRN {
 			String companyPrefixBin = inputBin.substring(14,14+tableItem.getM());
 			String serialWithExtensionBin = inputBin.substring(14+tableItem.getM(),14+tableItem.getM()+tableItem.getN());
 			String filterDec = Long.toString( Long.parseLong(filterBin, 2) );
-			String companyPrefixDec = Converter.binToDec(companyPrefixBin); //Long.toString( Long.parseLong(companyPrefixBin, 2) );
+			String companyPrefixDec = Converter.binToDec(companyPrefixBin);
 
 			serviceReference = Converter.strZero(Converter.binToDec(serialWithExtensionBin), tableItem.getDigits() ); 
 			companyPrefix = Converter.strZero(companyPrefixDec, tableItem.getL());
@@ -247,13 +247,6 @@ public class ParseGSRN {
 			return new ParseGSRN(this);
 		}
 
-//		@Override
-//		public SerialStep withExtensionDigit(SSCCExtensionDigit extensionDigit) {
-//			this.extensionDigit = extensionDigit;
-//			return this;
-//		}
-		
-		
 		@Override
 		public BuildStep withFilterValue(GSRNFilterValue filterValue) {
 			this.filterValue = filterValue;

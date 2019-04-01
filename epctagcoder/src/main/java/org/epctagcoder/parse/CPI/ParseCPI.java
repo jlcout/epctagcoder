@@ -30,7 +30,7 @@ public class ParseCPI {
 	private TableItem tableItem;
 	private int remainder;
 	
-    public static ChoiceStep Builder() {
+    public static ChoiceStep Builder() throws Exception {
         return new Steps();
     }
 
@@ -70,73 +70,22 @@ public class ParseCPI {
 			String serialBin = null;
 			
 			if (tagSize.getValue()==0) {  // variable
-//				System.out.println("inputBin.length()      "+inputBin.length() );
-//				System.out.println("tableItem.getM()       "+tableItem.getM() );
-//				System.out.println("tableItem.getN()       "+tableItem.getN() );
-//				System.out.println("tableItem.getDigits()  "+tableItem.getDigits() );
-//				System.out.println("tagSize.getSerialBitCount()  "+tagSize.getSerialBitCount() );
-
 				String componentPartReferenceAndSerialBin = inputBin.substring(14+tableItem.getM()  );
-				
-				Pattern pattern = Pattern.compile("\\d{6}");
-				Matcher matcher = pattern.matcher(componentPartReferenceAndSerialBin);
-				
-				System.out.println("lpadzero "+ Converter.lPadZero(123, 5) );
-				System.out.println("lpadzero "+ Converter.strZero("123", 5) );
-				
-//				System.out.println( componentPartReferenceAndSerialBin );
-				
-				
+
 				StringBuilder decodeComponentPartReference = new StringBuilder();
-				
-				List<String> aaa = Converter.splitEqually(componentPartReferenceAndSerialBin, 6);
-				for (String a : aaa) {
-//					System.out.println("* "+a);
-					if ( a.equals("000000") ) {
+				List<String> splitCPR = Converter.splitEqually(componentPartReferenceAndSerialBin, 6);
+				for (String item : splitCPR) {
+					if ( item.equals("000000") ) {
 						break;
 					}
-					decodeComponentPartReference.append( a );
+					decodeComponentPartReference.append(item);
 				}
 				
-			
-				
-				
-				
-//				int mIdx = 0;
-//				boolean stop = false;
-//				while (matcher.find()) {
-//					for (int groupIdx = 0; groupIdx < matcher.groupCount() + 1; groupIdx++) {
-//						System.out.println( "[" + mIdx + "][" + groupIdx + "] = " + matcher.group(groupIdx));
-//						if ( matcher.group(groupIdx).equals("000000") ) {
-//							stop = true;
-//							break;
-//						}
-//						decodeComponentPartReference.append( matcher.group(groupIdx) );
-//					}
-//					if (stop) {
-//						break;
-//					}
-//					mIdx++;
-//				}
-				
-//				System.out.println("decodeComponentPartReference "+decodeComponentPartReference.toString());
-				
 				componentPartReferenceBin = decodeComponentPartReference.toString();
-
 				int posSerial = 14+tableItem.getM()+componentPartReferenceBin.length()+6;
-//				System.out.println("pos                    "+pos );
-				
-//				System.out.println("componentPartReferenceBin.length() "+ componentPartReferenceBin.length()+" * "+componentPartReferenceBin );
-				
 				componentPartReferenceBin = Converter.convertBinToBit(componentPartReferenceBin, 6, 8);
-//				System.out.println("componentPartReferenceBin.convertBinToBit "+ componentPartReferenceBin.length()+" * "+componentPartReferenceBin );				
-				
 				componentPartReference = Converter.binToString(componentPartReferenceBin);
-				
 				serialBin = inputBin.substring(posSerial, posSerial+tagSize.getSerialBitCount());
-//				System.out.println("***  "+serialBin);
-				
-				
 			} else if (tagSize.getValue()==96) {
 				componentPartReferenceBin = inputBin.substring(14+tableItem.getM(),14+tableItem.getM()+tableItem.getN());
 				componentPartReference = Converter.binToDec(componentPartReferenceBin);
@@ -144,18 +93,11 @@ public class ParseCPI {
 			}
 			
 			
-			
-			
 			String companyPrefixDec = Converter.binToDec(companyPrefixBin);
-		
-			
-			
-			
 			serial = Converter.binToDec(serialBin);
 			companyPrefix = Converter.strZero(companyPrefixDec, tableItem.getL()); // strzero aqui
 			filterValue = CPIFilterValue.forCode( Integer.parseInt(filterDec) );
 			prefixLength = PrefixLength.forCode(tableItem.getL());
-			
 		} else {
 		
 			if ( optionalCompanyPrefix.isPresent() ) {
@@ -172,8 +114,6 @@ public class ParseCPI {
 			} else {
 				
 				if ( optionalEpcTagURI.isPresent() ) {
-					//urn:epc:tag:cpi-var:0.0614141.23467890.1234567
-//					Pattern pattern = Pattern.compile("(urn:epc:tag:cpi-)(96|var)\\:([0-7])\\.(\\d+)\\.(\\d+)\\.(\\w+)");
 					Pattern pattern = Pattern.compile("(urn:epc:tag:cpi-)(96|var)\\:([0-7])\\.(\\d+)\\.(\\d+)\\.(\\w+)");
 					
 					Matcher matcher = pattern.matcher(epcTagURI);
@@ -243,25 +183,17 @@ public class ParseCPI {
 		bin.append( Converter.decToBin(tableItem.getPartitionValue(), 3) );
 		bin.append( Converter.decToBin(Integer.parseInt(companyPrefix), tableItem.getM()) );
 		
-//		System.out.println("sem componentPartReference "+ bin.toString() );
-		
 		if (tagSize.getValue()==0) {  // variable		
-			//bin.append( Converter.fill(Converter.StringtoBinary(componentPartReference, 6), tableItem.getDigits()) );
 			bin.append( Converter.StringtoBinary(componentPartReference, 6) );
 			bin.append("000000");
 		} else if (tagSize.getValue()==96) {
 			bin.append( Converter.decToBin(Integer.parseInt(componentPartReference), tableItem.getN()) );
 		}
 		
-//		System.out.println("sem serial "+ bin.toString() );
-		
 		bin.append( Converter.decToBin(serial, tagSize.getSerialBitCount() ) );
 		remainder =  (int) (Math.ceil((bin.length()/16.0))*16)-bin.length();
 		bin.append( Converter.fill("0", remainder) );
 		
-//		System.out.println("completo "+ bin.toString() );
-
-
 		return bin.toString();
 	}	
 	
@@ -284,17 +216,7 @@ public class ParseCPI {
 		}
 	}
 	
-	/*
-	The component/part reference is also limited to
-	values that are numeric-only, with no leading
-	zeros, and whose length is less than or equal to
-	15 minus the length of the GS1 Company Prefix
-	
-	All values permitted by GS1 General
-	Specifications (up to 12 decimal digits, no
-	leading zeros).	
-	*/	
-	
+
 	
 	private void validateComponentPartReference() {
 		

@@ -30,7 +30,7 @@ public class ParseSGTIN {
 	private TableItem tableItem;
 	private int remainder;
 	
-	public static ChoiceStep Builder() {
+	public static ChoiceStep Builder() throws Exception {
 		return new Steps();
 	}
 
@@ -71,7 +71,6 @@ public class ParseSGTIN {
 			String serialBin = inputBin.substring(14+tableItem.getM()+tableItem.getN()  );
 			String companyPrefixDec = Converter.binToDec(companyPrefixBin);
 			String itemReferenceWithExtensionDec = Converter.strZero(Converter.binToDec(itemReferenceWithExtensionBin), tableItem.getDigits());
-			
 			String extensionDec = itemReferenceWithExtensionDec.substring(0,1);
 			
 			itemReference = itemReferenceWithExtensionDec.substring(1); 

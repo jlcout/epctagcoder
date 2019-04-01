@@ -28,7 +28,7 @@ public class ParseGDTI {
 	private TableItem tableItem;
 	private int remainder;
 	
-    public static ChoiceStep Builder() {
+    public static ChoiceStep Builder() throws Exception {
         return new Steps();
     }
 
@@ -120,7 +120,7 @@ public class ParseGDTI {
 					if ( matcher.matches() ) {
 						companyPrefix = matcher.group(2);
 						prefixLength = PrefixLength.forCode( matcher.group(2).length() );
-						docType = matcher.group(3);;
+						docType = matcher.group(3);
 						serial = matcher.group(4);
 					} else {
 						throw new IllegalArgumentException("EPC Pure Identity is invalid");
