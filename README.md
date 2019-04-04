@@ -29,7 +29,7 @@ An extremely intuitive, small and ultra fast EPC encoding and decoding library f
 - SGCN  - _Serialized Global Coupon Number_
 
 
-### Example
+### Examples
 
 ```markdown
 ParseSSCC parseSSCC = ParseSSCC.Builder()
