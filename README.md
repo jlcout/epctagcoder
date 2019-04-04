@@ -5,7 +5,7 @@
 An extremely intuitive, small and ultra fast EPC encoding and decoding library for java. 
 
 ### Download binary release
-[EPCtagCoder v0.0.5](https://github.com/jlcout/epctagcoder/releases)
+[EPCtagCoder v0.0.6](https://github.com/jlcout/epctagcoder/releases)
 
 ### Features
 
@@ -32,17 +32,44 @@ An extremely intuitive, small and ultra fast EPC encoding and decoding library f
 ### Example
 
 ```markdown
+ParseSSCC parseSSCC = ParseSSCC.Builder()
+		.withCompanyPrefix("023356789")
+		.withExtensionDigit( SSCCExtensionDigit.EXTENSION_3 )
+		.withSerial("0200002")
+		.withTagSize( SSCCTagSize.BITS_96 )
+		.withFilterValue( SSCCFilterValue.RESERVED_5 )
+		.build();
+SSCC sscc = parseSSCC.getSSCC();
+System.out.println("parseSSCC  "+ sscc.toString() );
+
+
+
 
 ParseSSCC parseSSCC = ParseSSCC.Builder()
-	.withCompanyPrefix("023356789")
-	.withExtensionDigit(SSCCExtensionDigit.EXTENSION_3)
-	.withSerial("0200002")
-	.withTagSize(SSCCTagSize.BITS_96)
-	.withFilterValue(SSCCFilterValue.RESERVED_5)
-	.build();
-
+		   .withRFIDTag( "31AC16465751CCD0C2000000" )
+		   .build();
 SSCC sscc = parseSSCC.getSSCC();
-System.out.println("parseSSCC "+ sscc.toString() );   
+System.out.println("parseSSCC  "+ sscc.toString() );
+
+
+
+
+ParseSSCC parseSSCC = ParseSSCC.Builder()
+		   .withEPCTagURI( "urn:epc:tag:sscc-96:5.023356789.30200002" )
+		   .build();
+SSCC sscc = parseSSCC.getSSCC();
+System.out.println("parseSSCC  "+ sscc.toString() );
+
+
+
+
+ParseSSCC parseSSCC = ParseSSCC.Builder()
+		   .withEPCPureIdentityURI( "urn:epc:id:sscc:023356789.30200002" )
+		   .withTagSize( SSCCTagSize.BITS_96 )
+		   .withFilterValue( SSCCFilterValue.RESERVED_5 )
+		   .build();
+SSCC sscc = parseSSCC.getSSCC();
+System.out.println("parseSSCC  "+ sscc.toString() );
 
 ```
 
