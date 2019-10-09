@@ -126,10 +126,9 @@ public class Converter {
 //	http://stackoverflow.com/questions/4211705/binary-to-text-in-java?noredirect=1&lq=1
 	public static String convertBinToBit(String s, int fromBit, int toBit) {
 		StringBuilder bin = new StringBuilder();
-		StringBuilder regex = new StringBuilder().append("(?<=\\G.{").append(fromBit).append("})");
-		
-		String[] split = s.split(regex.toString());
-		for (String a : split) {
+		// https://stackoverflow.com/a/3760193/1696733
+		for (int start = 0; start < s.length(); start += fromBit) {
+			String a = s.substring(start, Math.min(s.length(), start + fromBit));
 			bin.append( lPadZero(Integer.parseInt(a), toBit) );
 		}
 		
