@@ -68,20 +68,23 @@ public class ParseSGTIN {
 			String filterDec = Long.toString( Long.parseLong(filterBin, 2) );
 			String companyPrefixBin = inputBin.substring(14, 14+tableItem.getM());
 			String itemReferenceWithExtensionBin = inputBin.substring(14+tableItem.getM(), 14+tableItem.getM()+tableItem.getN());
-			String serialBin = inputBin.substring(14+tableItem.getM()+tableItem.getN()  );
+			
+			String serialBin = inputBin.substring(14+tableItem.getM()+tableItem.getN()  )
+					.substring(0, tagSize.getSerialBitCount());
+
 			String companyPrefixDec = Converter.binToDec(companyPrefixBin);
 			String itemReferenceWithExtensionDec = Converter.strZero(Converter.binToDec(itemReferenceWithExtensionBin), tableItem.getDigits());
 			String extensionDec = itemReferenceWithExtensionDec.substring(0,1);
 			
-			itemReference = itemReferenceWithExtensionDec.substring(1); 
-
+			itemReference = itemReferenceWithExtensionDec.substring(1);
+			
 			if (tagSize.getSerialBitCount()==140) {
 				serialBin  = Converter.convertBinToBit(serialBin, 7, 8);
 				serial = Converter.binToString(serialBin);
 			} else if (tagSize.getSerialBitCount()==38) {
 				serial = Converter.binToDec(serialBin);
 			}
-
+			
 			companyPrefix = Converter.strZero(companyPrefixDec, tableItem.getL()); 
 			extensionDigit = SGTINExtensionDigit.forCode( Integer.parseInt(extensionDec) );
 			filterValue = SGTINFilterValue.forCode( Integer.parseInt(filterDec) );
@@ -173,7 +176,7 @@ public class ParseSGTIN {
 		bin.append( Converter.decToBin(tagSize.getHeader(), 8) );
 		bin.append( Converter.decToBin(filterValue.getValue(), 3) );
 		bin.append( Converter.decToBin(tableItem.getPartitionValue(), 3) );
-		bin.append( Converter.decToBin(Integer.parseInt(companyPrefix), tableItem.getM()) );
+		bin.append( Converter.decToBin(companyPrefix, tableItem.getM()) );
 		bin.append( Converter.decToBin(Integer.parseInt(Integer.toString(extensionDigit.getValue())+itemReference), tableItem.getN()) );
 		
 		if (tagSize.getValue()==198) {		

@@ -36,14 +36,15 @@ public class SGTINPartitionTableList {
 	}
 	
 	public TableItem getPartitionByValue(Integer index) {
-		TableItem tableItem = null;
-		for (TableItem item : list) {
-			if (item.getPartitionValue()==index) {
-				tableItem = item;
-				break;
-			}
-		}
-		return tableItem;
+//		TableItem tableItem = null;
+		return list.get(index);
+//		for (TableItem item : list) {
+//			if (item.getPartitionValue()==index) {
+//				tableItem = item;
+//				break;
+//			}
+//		}
+//		return tableItem;
 	}	
 	
 

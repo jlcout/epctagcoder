@@ -278,7 +278,7 @@ public class ParseCPI {
     }
     
     public static interface serialStep {
-    	TagSizeStep withserial(String serial);
+    	TagSizeStep withSerial(String serial);
     }   
     
     public static interface TagSizeStep {
@@ -322,7 +322,7 @@ public class ParseCPI {
 		}
 
 		@Override
-		public TagSizeStep withserial(String serial) {
+		public TagSizeStep withSerial(String serial) {
 			this.serial = serial;
 			return this;
 		}

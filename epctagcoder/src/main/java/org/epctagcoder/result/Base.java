@@ -13,6 +13,7 @@ public abstract class Base {
 	private String epcRawURI;
 	private String binary;
 	private String rfidTag;
+	private String exception;
 	
 
 	public Base() {
@@ -137,6 +138,16 @@ public abstract class Base {
 
 	public void setRfidTag(String rfidTag) {
 		this.rfidTag = rfidTag;
+	}
+
+
+	public String getException() {
+		return exception;
+	}
+
+
+	public void setException(String exception) {
+		this.exception = exception;
 	}
 
 
