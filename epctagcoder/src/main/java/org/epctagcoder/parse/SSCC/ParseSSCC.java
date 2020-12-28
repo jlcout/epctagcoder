@@ -86,7 +86,7 @@ public class ParseSSCC {
 				tableItem = ssccPartitionTableList.getPartitionByL( prefixLength.getValue() );
 				validateExtensionDigitAndSerial();
 			} else {
-				if ( optionalEpcTagURI.isPresent() ) {
+				if ( optionalEpcTagURI.isPresent() ) { 
 					Pattern pattern = Pattern.compile("(urn:epc:tag:sscc-)(96)\\:([0-7])\\.(\\d+)\\.([0-9])(\\d+)");
 					Matcher matcher = pattern.matcher(epcTagURI);
 					
