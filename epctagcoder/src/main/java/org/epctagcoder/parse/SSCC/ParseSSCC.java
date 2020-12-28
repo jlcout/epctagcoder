@@ -87,7 +87,7 @@ public class ParseSSCC {
 				validateExtensionDigitAndSerial();
 			} else {
 				if ( optionalEpcTagURI.isPresent() ) {
-					Pattern pattern = Pattern.compile("(urn:epc:tag:sscc-)(96)\\:([0-7])\\.(\\d+)\\.([0-8])(\\d+)");
+					Pattern pattern = Pattern.compile("(urn:epc:tag:sscc-)(96)\\:([0-7])\\.(\\d+)\\.([0-9])(\\d+)");
 					Matcher matcher = pattern.matcher(epcTagURI);
 					
 					if ( matcher.matches() ) {
@@ -102,7 +102,7 @@ public class ParseSSCC {
 					}
 					
 				} else if ( optionalEpcPureIdentityURI.isPresent() ) {
-					Pattern pattern = Pattern.compile("(urn:epc:id:sscc)\\:(\\d+)\\.([0-8])(\\d+)");
+					Pattern pattern = Pattern.compile("(urn:epc:id:sscc)\\:(\\d+)\\.([0-9])(\\d+)");
 					Matcher matcher = pattern.matcher(epcPureIdentityURI);
 					
 					if ( matcher.matches() ) {

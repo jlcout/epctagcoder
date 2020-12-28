@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
+import org.epctagcoder.exception.EPCParseException;
 import org.epctagcoder.option.PrefixLength;
 import org.epctagcoder.option.TableItem;
 import org.epctagcoder.option.GIAI.GIAIFilterValue;
@@ -28,7 +28,7 @@ public class ParseGIAI {
 	private TableItem tableItem;
 	private int remainder;
 	
-    public static ChoiceStep Builder() {
+    public static ChoiceStep Builder() throws EPCParseException {
         return new Steps();
     }
 
@@ -57,28 +57,32 @@ public class ParseGIAI {
 			String filterBin = inputBin.substring(8,11);
 			String partitionBin = inputBin.substring(11,14);
 			
-			tagSize = GIAITagSize.forCode(GIAIHeader.forCode(headerBin).getTagSize());
-			
-			GIAIPartitionTableList GIAIPartitionTableList = new GIAIPartitionTableList(tagSize);			
-
-			tagSize = GIAITagSize.forCode(GIAIHeader.forCode(headerBin).getTagSize());
-			tableItem = GIAIPartitionTableList.getPartitionByValue( Integer.parseInt(partitionBin, 2) );
-			
-			String filterDec = Long.toString( Long.parseLong(filterBin, 2) );
-			String companyPrefixBin = inputBin.substring(14,14+tableItem.getM());
-			String individualAssetReferenceBin = inputBin.substring(14+tableItem.getM(),14+tableItem.getM()+tableItem.getN());
-			String companyPrefixDec = Converter.binToDec(companyPrefixBin);
-			
-			if (tagSize.getSerialBitCount()==112) {
-				individualAssetReferenceBin  = Converter.convertBinToBit(individualAssetReferenceBin, 7, 8);
-				individualAssetReference = Converter.binToString(individualAssetReferenceBin);
-			} else if (tagSize.getSerialBitCount()==38) {
-				individualAssetReference = Converter.binToDec(individualAssetReferenceBin);
+			try {
+				tagSize = GIAITagSize.forCode(GIAIHeader.forCode(headerBin).getTagSize());
+				GIAIPartitionTableList GIAIPartitionTableList = new GIAIPartitionTableList(tagSize);			
+				tableItem = GIAIPartitionTableList.getPartitionByValue( Integer.parseInt(partitionBin, 2) );
+				
+				String filterDec = Long.toString( Long.parseLong(filterBin, 2) );
+				String companyPrefixBin = inputBin.substring(14,14+tableItem.getM());
+				String individualAssetReferenceBin = inputBin.substring(14+tableItem.getM(),14+tableItem.getM()+tableItem.getN());
+				String companyPrefixDec = Converter.binToDec(companyPrefixBin);
+				
+				if (tagSize.getSerialBitCount()==112) {
+					individualAssetReferenceBin  = Converter.convertBinToBit(individualAssetReferenceBin, 7, 8);
+					individualAssetReference = Converter.binToString(individualAssetReferenceBin);
+				} else if (tagSize.getSerialBitCount()==38) {
+					individualAssetReference = Converter.binToDec(individualAssetReferenceBin);
+				}
+				
+				companyPrefix = Converter.strZero(companyPrefixDec, tableItem.getL()); 
+				filterValue = GIAIFilterValue.forCode( Integer.parseInt(filterDec) );
+				prefixLength = PrefixLength.forCode(tableItem.getL());				
+				
+			} catch (Exception e) {
+				throw new EPCParseException("EPC is invalid");
 			}
 			
-			companyPrefix = Converter.strZero(companyPrefixDec, tableItem.getL()); 
-			filterValue = GIAIFilterValue.forCode( Integer.parseInt(filterDec) );
-			prefixLength = PrefixLength.forCode(tableItem.getL());
+		
 			
 		} else {
 		
