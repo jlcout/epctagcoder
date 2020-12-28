@@ -5,13 +5,13 @@
 An extremely intuitive, small and ultra fast EPC encoding and decoding library for java. 
 
 ### Download binary release
-[EPCtagCoder v0.0.7](https://github.com/jlcout/epctagcoder/releases)
+[EPCtagCoder v0.0.8](https://github.com/jlcout/epctagcoder/releases)
 
 ### Features
 
 - Implemented in accordance with [EPC Tag Data Standard 1.9](http://www.gs1.org/epc/tag-data-standard)
 - Easy to understand, developed with step builder pattern
-- Small library, only 50kb
+- Small library, only 160kb
 - Ultra fast, encode / decode 10.000 EPC on 200 milliseconds
 
 
