@@ -186,7 +186,7 @@ public class ParseSGLN {
                 + Character.getNumericValue(value.charAt(8)) + Character.getNumericValue(value.charAt(10))))
                 % 10)) % 10;
     }
- 
+
     public SGLN getSGLN() {
         return sgln;
     }
