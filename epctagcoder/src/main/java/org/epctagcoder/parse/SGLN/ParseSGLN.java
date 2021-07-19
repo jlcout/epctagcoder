@@ -198,7 +198,7 @@ public class ParseSGLN {
 
     private void validateCompanyPrefix() {
         Optional<PrefixLength> optionalPrefixLength = Optional.ofNullable(prefixLength);
-        if (optionalPrefixLength.isEmpty()) {
+        if (optionalPrefixLength.isPresent()) {
             throw new IllegalArgumentException("Company Prefix is invalid. Length not found in the partition table");
         }
     }
