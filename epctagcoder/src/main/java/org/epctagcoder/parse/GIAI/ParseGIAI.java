@@ -71,7 +71,7 @@ public class ParseGIAI {
 			} else if (tagSize.getSerialBitCount()==38) {
 				individualAssetReference = Converter.binToDec(individualAssetReferenceBin);
 			}
-			
+			 
 			companyPrefix = Converter.strZero(companyPrefixDec, tableItem.getL()); 
 			filterValue = GIAIFilterValue.forCode( Integer.parseInt(filterDec) );
 			prefixLength = PrefixLength.forCode(tableItem.getL());				
