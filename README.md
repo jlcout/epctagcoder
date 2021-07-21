@@ -5,7 +5,7 @@
 An extremely intuitive, small and ultra fast EPC encoding and decoding library for java. 
 
 ### Download binary release
-[EPCtagCoder v0.0.8](https://github.com/jlcout/epctagcoder/releases)
+[EPCtagCoder v0.0.9](https://github.com/jlcout/epctagcoder/releases)
 
 ### Features
 
