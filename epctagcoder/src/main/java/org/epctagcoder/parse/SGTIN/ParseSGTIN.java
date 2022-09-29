@@ -1,9 +1,9 @@
 package org.epctagcoder.parse.SGTIN;
 
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.epctagcoder.exception.EPCParseException;
 import org.epctagcoder.option.PrefixLength;
 import org.epctagcoder.option.TableItem;
 import org.epctagcoder.option.SGTIN.SGTINExtensionDigit;
@@ -31,11 +31,11 @@ public class ParseSGTIN {
 	private TableItem tableItem;
 	private int remainder;
 	
-	public static ChoiceStep Builder() throws Exception {
+	public static ChoiceStep Builder() {
 		return new Steps();
 	}
 
-	private ParseSGTIN(Steps steps) {
+	private ParseSGTIN(Steps steps) throws EPCParseException {
 		this.extensionDigit = steps.extensionDigit;
 		this.companyPrefix = steps.companyPrefix;
 		this.tagSize = steps.tagSize;
@@ -48,7 +48,7 @@ public class ParseSGTIN {
 		parse();
 	}
 	
-	private void parseRfidTag() {
+	private void parseRfidTag() throws EPCParseException {
 		String inputBin = Converter.hexToBin(rfidTag);
 		String headerBin = inputBin.substring(0, 8);
 		String filterBin = inputBin.substring(8, 11);
@@ -84,7 +84,7 @@ public class ParseSGTIN {
 		prefixLength = PrefixLength.forCode(tableItem.getL());
 	}
 	
-	private void parseCompanyPrefix() {
+	private void parseCompanyPrefix() throws EPCParseException {
 		SGTINPartitionTableList sgtinPartitionTableList = new SGTINPartitionTableList();
 		prefixLength = PrefixLength.forCode(companyPrefix.length());
 		
@@ -96,7 +96,7 @@ public class ParseSGTIN {
 		validateSerial();
 	}
 	
-	private void parseTagUri() {
+	private void parseTagUri() throws EPCParseException {
 		Pattern pattern = Pattern.compile("(urn:epc:tag:sgtin-)(96|198):([0-7])\\.(\\d+)\\.([0-8])(\\d+)\\.(\\w+)");
 		Matcher matcher = pattern.matcher(epcTagURI);
 		
@@ -109,11 +109,11 @@ public class ParseSGTIN {
 			itemReference = matcher.group(6);
 			serial = matcher.group(7);
 		} else {
-			throw new IllegalArgumentException("EPC Tag URI is invalid");
+			throw new EPCParseException("EPC Tag URI is invalid");
 		}
 	}
 	
-	private void parsePureIdentityUri() {
+	private void parsePureIdentityUri() throws EPCParseException {
 		Pattern pattern = Pattern.compile("(urn:epc:id:sgtin):(\\d+)\\.([0-8])(\\d+)\\.(\\w+)");
 		Matcher matcher = pattern.matcher(epcPureIdentityURI);
 		
@@ -124,11 +124,11 @@ public class ParseSGTIN {
 			itemReference = matcher.group(4);
 			serial = matcher.group(5);
 		} else {
-			throw new IllegalArgumentException("EPC Pure Identity is invalid");
+			throw new EPCParseException("EPC Pure Identity is invalid");
 		}
 	}
 	
-	private void parse() {
+	private void parse() throws EPCParseException {
 		
 		if(rfidTag != null) {
 			parseRfidTag();
@@ -175,10 +175,10 @@ public class ParseSGTIN {
 		bin.append( Converter.decToBin(filterValue.getValue(), 3) );
 		bin.append( Converter.decToBin(tableItem.getPartitionValue(), 3) );
 		bin.append( Converter.decToBin(companyPrefix, tableItem.getM()) );
-		bin.append( Converter.decToBin(Integer.parseInt(Integer.toString(extensionDigit.getValue())+itemReference), tableItem.getN()) );
+		bin.append( Converter.decToBin(Integer.parseInt(extensionDigit.getValue() +itemReference), tableItem.getN()) );
 		
 		if (tagSize.getValue()==198) {		
-			bin.append( Converter.fill(Converter.StringtoBinary(serial, 7), tagSize.getSerialBitCount()+remainder ) );
+			bin.append( Converter.fill(Converter.StringToBinary(serial, 7), tagSize.getSerialBitCount()+remainder ) );
 		} else if (tagSize.getValue()==96) {
 			bin.append( Converter.decToBin(serial, tagSize.getSerialBitCount()+remainder ) );
 		}
@@ -209,36 +209,36 @@ public class ParseSGTIN {
 		return Converter.binToHex( getBinary() );
 	}
 	
-	private void validateExtensionDigitAndItemReference() { 
+	private void validateExtensionDigitAndItemReference() throws EPCParseException {
 		StringBuilder value = new StringBuilder()
 				.append(extensionDigit.getValue())
 				.append(itemReference);
 		
 		if ( value.length()!=tableItem.getDigits() ) {
-			throw new IllegalArgumentException(String.format("Concatenation between Extension Digit \"%d\" and Item Reference \"%s\" has %d length and should have %d length",
+			String message = "Concatenation between Extension Digit \"%d\" and " +
+					"Item Reference \"%s\" has %d length and should have %d length";
+			throw new EPCParseException(String.format(message,
 					extensionDigit.getValue(), itemReference, value.length(), tableItem.getDigits()));
 		}
 	}
 	
-	private void validateCompanyPrefix() { 
-		Optional<PrefixLength> optionalPefixLength = Optional.ofNullable(prefixLength);
-		if ( !optionalPefixLength.isPresent() ) {
-			throw new IllegalArgumentException("Company Prefix is invalid. Length not found in the partition table");
+	private void validateCompanyPrefix() throws EPCParseException {
+		if(prefixLength == null) {
+			throw new EPCParseException("Company Prefix is invalid. Length not found in the partition table");
 		}
-		
 	}
 	
-	private void validateSerial() { 
+	private void validateSerial() throws EPCParseException {
 		if (tagSize.getValue()==198 ) {
 			if ( serial.length()>tagSize.getSerialMaxLenght() ) {
-				throw new IllegalArgumentException("Serial value is out of range. Should be up to 20 alphanumeric characters");
+				throw new EPCParseException("Serial value is out of range. Should be up to 20 alphanumeric characters");
 			}
 		} else if (tagSize.getValue()==96 ) {
 			if ( Long.parseLong(serial) >tagSize.getSerialMaxValue() ) {                                            
-				throw new IllegalArgumentException("Serial value is out of range. Should be less than or equal 274,877,906,943");
+				throw new EPCParseException("Serial value is out of range. Should be less than or equal 274,877,906,943");
 			}
 			if ( serial.startsWith("0") ) {
-				throw new IllegalArgumentException("Serial with leading zeros is not allowed");
+				throw new EPCParseException("Serial with leading zeros is not allowed");
 			}
 		}
 		
@@ -272,7 +272,7 @@ public class ParseSGTIN {
     }
     
     public interface BuildStep {
-    	ParseSGTIN build();
+    	ParseSGTIN build() throws EPCParseException;
     }
 	
     private static class Steps implements ChoiceStep, ExtensionDigitStep, ItemReferenceStep, SerialStep, TagSizeStep, FilterValueStep, BuildStep {
@@ -287,7 +287,7 @@ public class ParseSGTIN {
     	private String epcPureIdentityURI;
 
 		@Override
-		public ParseSGTIN build() {
+		public ParseSGTIN build() throws EPCParseException {
 			return new ParseSGTIN(this);
 		}
 		
