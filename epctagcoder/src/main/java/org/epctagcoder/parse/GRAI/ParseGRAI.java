@@ -167,7 +167,7 @@ public class ParseGRAI {
 		bin.append( Converter.decToBin(Integer.parseInt(assetType), tableItem.getN()) );
 
 		if (tagSize.getValue()==170) {		
-			bin.append( Converter.fill(Converter.StringtoBinary(serial, 7), tagSize.getSerialBitCount()+remainder) );   
+			bin.append( Converter.fill(Converter.StringToBinary(serial, 7), tagSize.getSerialBitCount()+remainder) );
 		} else if (tagSize.getValue()==96) {
 			bin.append( Converter.decToBin(serial, tagSize.getSerialBitCount()+remainder ) );
 		}

@@ -14,9 +14,13 @@ import org.epctagcoder.option.SGTIN.partitionTable.SGTINPartitionTableList;
 import org.epctagcoder.result.SGTIN;
 import org.epctagcoder.util.Converter;
 
-
 public class ParseSGTIN {
-	private SGTIN sgtin = new SGTIN();
+	
+	private final SGTIN sgtin = new SGTIN();
+	private final String rfidTag;
+	private final String epcTagURI;
+	private final String epcPureIdentityURI;
+	
 	private SGTINExtensionDigit extensionDigit;
 	private String companyPrefix;
 	private PrefixLength prefixLength;
@@ -24,9 +28,6 @@ public class ParseSGTIN {
 	private SGTINFilterValue filterValue;
 	private String itemReference;
 	private String serial;
-	private String rfidTag;
-	private String epcTagURI;
-	private String epcPureIdentityURI;
 	private TableItem tableItem;
 	private int remainder;
 	
@@ -47,102 +48,101 @@ public class ParseSGTIN {
 		parse();
 	}
 	
+	private void parseRfidTag() {
+		String inputBin = Converter.hexToBin(rfidTag);
+		String headerBin = inputBin.substring(0, 8);
+		String filterBin = inputBin.substring(8, 11);
+		String partitionBin = inputBin.substring(11, 14);
+		SGTINPartitionTableList sgtinPartitionTableList = new SGTINPartitionTableList();
+		
+		tagSize = SGTINTagSize.forCode(SGTINHeader.forCode(headerBin).getTagSize());
+		tableItem = sgtinPartitionTableList.getPartitionByValue( Integer.parseInt(partitionBin, 2) );
+		
+		String filterDec = Long.toString( Long.parseLong(filterBin, 2) );
+		String companyPrefixBin = inputBin.substring(14, 14+tableItem.getM());
+		String itemReferenceWithExtensionBin = inputBin.substring(14+tableItem.getM(), 14+tableItem.getM()+tableItem.getN());
+		
+		String serialBin = inputBin.substring(14+tableItem.getM()+tableItem.getN()  )
+				.substring(0, tagSize.getSerialBitCount());
+		
+		String companyPrefixDec = Converter.binToDec(companyPrefixBin);
+		String itemReferenceWithExtensionDec = Converter.strZero(Converter.binToDec(itemReferenceWithExtensionBin), tableItem.getDigits());
+		String extensionDec = itemReferenceWithExtensionDec.substring(0,1);
+		
+		itemReference = itemReferenceWithExtensionDec.substring(1);
+		
+		if (tagSize.getSerialBitCount()==140) {
+			serialBin  = Converter.convertBinToBit(serialBin, 7, 8);
+			serial = Converter.binToString(serialBin);
+		} else if (tagSize.getSerialBitCount()==38) {
+			serial = Converter.binToDec(serialBin);
+		}
+		
+		companyPrefix = Converter.strZero(companyPrefixDec, tableItem.getL());
+		extensionDigit = SGTINExtensionDigit.forCode( Integer.parseInt(extensionDec) );
+		filterValue = SGTINFilterValue.forCode( Integer.parseInt(filterDec) );
+		prefixLength = PrefixLength.forCode(tableItem.getL());
+	}
 	
+	private void parseCompanyPrefix() {
+		SGTINPartitionTableList sgtinPartitionTableList = new SGTINPartitionTableList();
+		prefixLength = PrefixLength.forCode(companyPrefix.length());
+		
+		validateCompanyPrefix();
+		
+		tableItem = sgtinPartitionTableList.getPartitionByL(prefixLength.getValue());
+		
+		validateExtensionDigitAndItemReference();
+		validateSerial();
+	}
+	
+	private void parseTagUri() {
+		Pattern pattern = Pattern.compile("(urn:epc:tag:sgtin-)(96|198):([0-7])\\.(\\d+)\\.([0-8])(\\d+)\\.(\\w+)");
+		Matcher matcher = pattern.matcher(epcTagURI);
+		
+		if (matcher.matches()) {
+			tagSize = SGTINTagSize.forCode(Integer.parseInt(matcher.group(2)));
+			filterValue = SGTINFilterValue.forCode(Integer.parseInt(matcher.group(3)));
+			companyPrefix = matcher.group(4);
+			prefixLength = PrefixLength.forCode(matcher.group(4).length());
+			extensionDigit = SGTINExtensionDigit.forCode(Integer.parseInt(matcher.group(5)));
+			itemReference = matcher.group(6);
+			serial = matcher.group(7);
+		} else {
+			throw new IllegalArgumentException("EPC Tag URI is invalid");
+		}
+	}
+	
+	private void parsePureIdentityUri() {
+		Pattern pattern = Pattern.compile("(urn:epc:id:sgtin):(\\d+)\\.([0-8])(\\d+)\\.(\\w+)");
+		Matcher matcher = pattern.matcher(epcPureIdentityURI);
+		
+		if (matcher.matches()) {
+			companyPrefix = matcher.group(2);
+			prefixLength = PrefixLength.forCode(matcher.group(2).length());
+			extensionDigit = SGTINExtensionDigit.forCode(Integer.parseInt(matcher.group(3)));
+			itemReference = matcher.group(4);
+			serial = matcher.group(5);
+		} else {
+			throw new IllegalArgumentException("EPC Pure Identity is invalid");
+		}
+	}
 	
 	private void parse() {
-		Optional<SGTINExtensionDigit> optionalCompanyPrefix = Optional.ofNullable(extensionDigit);
-		Optional<String> optionalRfidTag = Optional.ofNullable(rfidTag);
-		Optional<String> optionalEpcTagURI = Optional.ofNullable(epcTagURI);
-		Optional<String> optionalEpcPureIdentityURI = Optional.ofNullable(epcPureIdentityURI);
 		
-		if ( optionalRfidTag.isPresent() ) {
-			String inputBin = Converter.hexToBin(rfidTag);
-			String headerBin = inputBin.substring(0, 8);
-			String filterBin = inputBin.substring(8, 11);
-			String partitionBin = inputBin.substring(11, 14);
-			SGTINPartitionTableList sgtinPartitionTableList = new SGTINPartitionTableList();			
-
-			tagSize = SGTINTagSize.forCode(SGTINHeader.forCode(headerBin).getTagSize());
-			tableItem = sgtinPartitionTableList.getPartitionByValue( Integer.parseInt(partitionBin, 2) );
-			
-			String filterDec = Long.toString( Long.parseLong(filterBin, 2) );
-			String companyPrefixBin = inputBin.substring(14, 14+tableItem.getM());
-			String itemReferenceWithExtensionBin = inputBin.substring(14+tableItem.getM(), 14+tableItem.getM()+tableItem.getN());
-			
-			String serialBin = inputBin.substring(14+tableItem.getM()+tableItem.getN()  )
-					.substring(0, tagSize.getSerialBitCount());
-
-			String companyPrefixDec = Converter.binToDec(companyPrefixBin);
-			String itemReferenceWithExtensionDec = Converter.strZero(Converter.binToDec(itemReferenceWithExtensionBin), tableItem.getDigits());
-			String extensionDec = itemReferenceWithExtensionDec.substring(0,1);
-			
-			itemReference = itemReferenceWithExtensionDec.substring(1);
-			
-			if (tagSize.getSerialBitCount()==140) {
-				serialBin  = Converter.convertBinToBit(serialBin, 7, 8);
-				serial = Converter.binToString(serialBin);
-			} else if (tagSize.getSerialBitCount()==38) {
-				serial = Converter.binToDec(serialBin);
-			}
-			
-			companyPrefix = Converter.strZero(companyPrefixDec, tableItem.getL()); 
-			extensionDigit = SGTINExtensionDigit.forCode( Integer.parseInt(extensionDec) );
-			filterValue = SGTINFilterValue.forCode( Integer.parseInt(filterDec) );
-			prefixLength = PrefixLength.forCode(tableItem.getL());
-			
+		if(rfidTag != null) {
+			parseRfidTag();
+		} else if (extensionDigit != null) {
+			parseCompanyPrefix();
 		} else {
-		
-			if ( optionalCompanyPrefix.isPresent() ) {
-				SGTINPartitionTableList sgtinPartitionTableList = new SGTINPartitionTableList();				
-				prefixLength = PrefixLength.forCode( companyPrefix.length() );
-
-				validateCompanyPrefix();
-
-				tableItem = sgtinPartitionTableList.getPartitionByL( prefixLength.getValue() );
-				
-				validateExtensionDigitAndItemReference();
-				validateSerial();
-				
-			} else {
-				
-				if ( optionalEpcTagURI.isPresent() ) {
-					Pattern pattern = Pattern.compile("(urn:epc:tag:sgtin-)(96|198)\\:([0-7])\\.(\\d+)\\.([0-8])(\\d+)\\.(\\w+)");
-					Matcher matcher = pattern.matcher(epcTagURI);
-
-					if ( matcher.matches() ) {
-						tagSize = SGTINTagSize.forCode( Integer.parseInt(matcher.group(2)) );
-						filterValue = SGTINFilterValue.forCode( Integer.parseInt(matcher.group(3)) );
-						companyPrefix = matcher.group(4);
-						prefixLength = PrefixLength.forCode( matcher.group(4).length() );
-						extensionDigit = SGTINExtensionDigit.forCode( Integer.parseInt(matcher.group(5)) );
-						itemReference = matcher.group(6);
-						serial = matcher.group(7);					
-					} else {
-						throw new IllegalArgumentException("EPC Tag URI is invalid");
-					}
-
-				} else if ( optionalEpcPureIdentityURI.isPresent() ) {
-					Pattern pattern = Pattern.compile("(urn:epc:id:sgtin)\\:(\\d+)\\.([0-8])(\\d+)\\.(\\w+)");
-					Matcher matcher = pattern.matcher(epcPureIdentityURI);
-					
-					if ( matcher.matches() ) {
-						companyPrefix = matcher.group(2);
-						prefixLength = PrefixLength.forCode( matcher.group(2).length() );
-						extensionDigit = SGTINExtensionDigit.forCode( Integer.parseInt(matcher.group(3)) );
-						itemReference = matcher.group(4);;
-						serial = matcher.group(5);
-					} else {
-						throw new IllegalArgumentException("EPC Pure Identity is invalid");
-					}
-					
-
-				}			
-
-				SGTINPartitionTableList sgtinPartitionTableList = new SGTINPartitionTableList();
-				tableItem = sgtinPartitionTableList.getPartitionByL( prefixLength.getValue() );				
-				
+			if (epcTagURI != null) {
+				parseTagUri();
+			} else if (epcPureIdentityURI != null) {
+				parsePureIdentityUri();
 			}
 			
+			SGTINPartitionTableList sgtinPartitionTableList = new SGTINPartitionTableList();
+			tableItem = sgtinPartitionTableList.getPartitionByL(prefixLength.getValue());
 		}
 		
 		String outputBin = getBinary();
@@ -163,10 +163,8 @@ public class ParseSGTIN {
 		sgtin.setEpcTagURI(String.format("urn:epc:tag:sgtin-%s:%s.%s.%s%s.%s", tagSize.getValue(), filterValue.getValue(), companyPrefix, extensionDigit.getValue(), itemReference, serial));
 		sgtin.setEpcRawURI(String.format("urn:epc:raw:%s.x%s", tagSize.getValue()+remainder, outputHex ));
 		sgtin.setBinary(outputBin);
-		sgtin.setRfidTag(outputHex);		
-		
+		sgtin.setRfidTag(outputHex);
 	}	
-	
 	
 	private String getBinary() {
 		StringBuilder bin = new StringBuilder();
@@ -188,15 +186,10 @@ public class ParseSGTIN {
 		return bin.toString();
 	}	
 	
-	
 	private Integer getCheckDigit() {
-		String value = new StringBuilder()
-				.append(extensionDigit.getValue())
-				.append(companyPrefix)
-				.append(itemReference)
-				.toString();
-
-		Integer d14 = (10 - ((3
+		String value = extensionDigit.getValue() + companyPrefix + itemReference;
+		
+		return (10 - ((3
 				* (Character.getNumericValue(value.charAt(0)) + Character.getNumericValue(value.charAt(2))
 						+ Character.getNumericValue(value.charAt(4))
 						+ Character.getNumericValue(value.charAt(6)) + Character.getNumericValue(value.charAt(8))
@@ -205,8 +198,6 @@ public class ParseSGTIN {
 						+ Character.getNumericValue(value.charAt(5)) + Character.getNumericValue(value.charAt(7))
 						+ Character.getNumericValue(value.charAt(9)) + Character.getNumericValue(value.charAt(11))))
 				% 10)) % 10;
-				
-		return d14;
 	}
 
 	
@@ -217,9 +208,6 @@ public class ParseSGTIN {
 	public String getRfidTag() {
 		return Converter.binToHex( getBinary() );
 	}
-	
-	
-	
 	
 	private void validateExtensionDigitAndItemReference() { 
 		StringBuilder value = new StringBuilder()
@@ -255,43 +243,39 @@ public class ParseSGTIN {
 		}
 		
 	}
-
 	
-
-	
-    public static interface ChoiceStep {
-    	ExtensionDigiStep withCompanyPrefix(String companyPrefix);    	
+    public interface ChoiceStep {
+    	ExtensionDigitStep withCompanyPrefix(String companyPrefix);
         BuildStep withRFIDTag(String rfidTag);
         BuildStep withEPCTagURI(String epcTagURI);
         TagSizeStep withEPCPureIdentityURI(String epcPureIdentityURI);
     }
 
-    public static interface ExtensionDigiStep {
+    public interface ExtensionDigitStep {
     	ItemReferenceStep withExtensionDigit(SGTINExtensionDigit extensionDigit);
     }   
     
-    public static interface ItemReferenceStep {
+    public interface ItemReferenceStep {
     	SerialStep withItemReference(String itemReference);
     }
     
-    public static interface SerialStep {
+    public interface SerialStep {
     	TagSizeStep withSerial(String serial);
     }   
     
-    public static interface TagSizeStep {
+    public interface TagSizeStep {
     	FilterValueStep withTagSize( SGTINTagSize tagSize );
     }
     
-    public static interface FilterValueStep {
+    public interface FilterValueStep {
     	BuildStep withFilterValue( SGTINFilterValue filterValue );	
     }
     
-    public static interface BuildStep {
+    public interface BuildStep {
     	ParseSGTIN build();
     }
-
-    
-    private static class Steps implements ChoiceStep, ExtensionDigiStep, ItemReferenceStep, SerialStep, TagSizeStep, FilterValueStep, BuildStep {
+	
+    private static class Steps implements ChoiceStep, ExtensionDigitStep, ItemReferenceStep, SerialStep, TagSizeStep, FilterValueStep, BuildStep {
     	private SGTINExtensionDigit extensionDigit;
     	private String companyPrefix;
     	private SGTINTagSize tagSize;
@@ -356,15 +340,11 @@ public class ParseSGTIN {
 		}
 
 		@Override
-		public ExtensionDigiStep withCompanyPrefix(String companyPrefix) {
+		public ExtensionDigitStep withCompanyPrefix(String companyPrefix) {
 			this.companyPrefix = companyPrefix;
 			return this;
 		}
-		
-    	
     }
-    
-
 }
 
 
