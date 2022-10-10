@@ -167,7 +167,7 @@ public class ParseGDTI {
 		bin.append( Converter.decToBin(Integer.parseInt(docType), tableItem.getN()) );
 
 		if (tagSize.getValue()==174) {		
-			bin.append( Converter.fill(Converter.StringtoBinary(serial, 7), tagSize.getSerialBitCount()+remainder) );   
+			bin.append( Converter.fill(Converter.StringToBinary(serial, 7), tagSize.getSerialBitCount()+remainder) );
 		} else if (tagSize.getValue()==96) {
 			bin.append( Converter.decToBin(serial, tagSize.getSerialBitCount()+remainder ) );
 		}

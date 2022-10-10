@@ -1,5 +1,7 @@
 package org.epctagcoder.option.SGTIN;
 
+import org.epctagcoder.exception.EPCParseException;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -15,11 +17,11 @@ public enum SGTINHeader {
 		}
 	};
 	
-	private String value;
+	private final String value;
 	public abstract Integer getTagSize();
 	
 	
-	private SGTINHeader(String value) {
+	SGTINHeader(String value) {
 		this.value = value;
 	}
 
@@ -34,11 +36,11 @@ public enum SGTINHeader {
         }
     }
     
-    public static SGTINHeader forCode(String code) {
+    public static SGTINHeader forCode(String code) throws EPCParseException {
     	SGTINHeader header = BY_CODE_MAP.get(code);
     	
     	if (header==null) {
-    		throw new IllegalArgumentException(String.format("SGTIN header [%s] is invalid. Allowed only 00110000 or 00110110", code));
+    		throw new EPCParseException(String.format("SGTIN header [%s] is invalid. Allowed only 00110000 or 00110110", code));
     	}
 
     	return header;

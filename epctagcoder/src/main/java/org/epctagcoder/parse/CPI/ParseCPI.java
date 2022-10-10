@@ -184,7 +184,7 @@ public class ParseCPI {
 		bin.append( Converter.decToBin(Integer.parseInt(companyPrefix), tableItem.getM()) );
 		
 		if (tagSize.getValue()==0) {  // variable		
-			bin.append( Converter.StringtoBinary(componentPartReference, 6) );
+			bin.append( Converter.StringToBinary(componentPartReference, 6) );
 			bin.append("000000");
 		} else if (tagSize.getValue()==96) {
 			bin.append( Converter.decToBin(Integer.parseInt(componentPartReference), tableItem.getN()) );

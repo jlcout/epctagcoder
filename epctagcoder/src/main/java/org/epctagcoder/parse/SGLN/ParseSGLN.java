@@ -164,7 +164,7 @@ public class ParseSGLN {
         bin.append(Converter.decToBin(Integer.parseInt(locationReference), tableItem.getN()));
 
         if (tagSize.getValue() == 195) {
-            bin.append(Converter.fill(Converter.StringtoBinary(extension, 7), tagSize.getSerialBitCount() + remainder));
+            bin.append(Converter.fill(Converter.StringToBinary(extension, 7), tagSize.getSerialBitCount() + remainder));
         } else if (tagSize.getValue() == 96) {
             bin.append(Converter.decToBin(extension, tagSize.getSerialBitCount() + remainder));
         }

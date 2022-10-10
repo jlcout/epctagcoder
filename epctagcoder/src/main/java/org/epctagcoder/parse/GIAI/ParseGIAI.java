@@ -155,7 +155,7 @@ public class ParseGIAI {
 		bin.append( Converter.decToBin(Integer.parseInt(companyPrefix), tableItem.getM()) );
 		
 		if (tagSize.getValue()==202) {
-			bin.append( Converter.fill(Converter.StringtoBinary(individualAssetReference, 7), tableItem.getN()+remainder) );
+			bin.append( Converter.fill(Converter.StringToBinary(individualAssetReference, 7), tableItem.getN()+remainder) );
 		} else if (tagSize.getValue()==96) {
 			bin.append( Converter.decToBin(individualAssetReference, tableItem.getN()+remainder ) );
 		}

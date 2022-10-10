@@ -3,11 +3,12 @@ package org.epctagcoder.option.SGTIN.partitionTable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.epctagcoder.exception.EPCParseException;
 import org.epctagcoder.option.TableItem;
 
 
 public class SGTINPartitionTableList {
-	static final private List<TableItem> list = new ArrayList<TableItem>();
+	static final private List<TableItem> list = new ArrayList<>();
 	
 	static {
 		list.add( new TableItem(0, 40, 12,  4, 1) );
@@ -35,16 +36,13 @@ public class SGTINPartitionTableList {
 		return tableItem;
 	}
 	
-	public TableItem getPartitionByValue(Integer index) {
-//		TableItem tableItem = null;
+	public TableItem getPartitionByValue(int index) throws EPCParseException {
+		if(index < 0 || index >= list.size()) {
+			String message = "Partition value %d is not within expected range (0 - %d)";
+			throw new EPCParseException(String.format(message, index, list.size() - 1));
+		}
+		
 		return list.get(index);
-//		for (TableItem item : list) {
-//			if (item.getPartitionValue()==index) {
-//				tableItem = item;
-//				break;
-//			}
-//		}
-//		return tableItem;
 	}	
 	
 
